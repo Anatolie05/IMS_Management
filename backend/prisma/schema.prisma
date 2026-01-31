@@ -1,0 +1,209 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ANALYST
+  ADMIN
+  VIEWER
+}
+
+enum IMSStatus {
+  DRAFT
+  IN_PROGRESS
+  COMPLETED
+  MERGED
+  ARCHIVED
+}
+
+enum PriorityLevel {
+  URGENT
+  HIGH
+  MEDIUM
+  LOW
+}
+
+model User {
+  id        String   @id @default(uuid())
+  email     String   @unique
+  password  String
+  fullName  String
+  role      UserRole @default(ANALYST)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  // Relations
+  assignedIMS     IMS[]          @relation("AssignedAnalyst")
+  createdIMS      IMS[]          @relation("CreatedBy")
+  createdMerges   MergedIMS[]    @relation("MergeCreatedBy")
+  comments        Comment[]
+  assignmentHistory IMSAssignmentHistory[]
+
+  @@map("users")
+}
+
+model IMS {
+  id          String       @id @default(uuid())
+  ccdId       String       @unique // CCD-1, CCD-2, etc. - auto-generated
+  reportName  String
+  description String       @db.Text
+  date        DateTime     @default(now())
+  linkOpenCTI String?
+  linkDocIntel String?
+  comments    String?      @db.Text
+  status      IMSStatus    @default(DRAFT)
+  priority    PriorityLevel @default(MEDIUM)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  deletedAt   DateTime?    // Soft delete
+
+  // Relations
+  analystId   String?
+  analyst     User?       @relation("AssignedAnalyst", fields: [analystId], references: [id])
+
+  createdById String
+  createdBy   User        @relation("CreatedBy", fields: [createdById], references: [id])
+
+  tags        IMSTag[]
+  relatedIMS  IMSRelation[] @relation("SourceIMS")
+  relatedFrom IMSRelation[] @relation("TargetIMS")
+
+  mergedInto  MergedIMSItem[] @relation("SourceIMS")
+
+  comments2   Comment[]
+  attachments Attachment[]
+  history     IMSHistory[]
+  assignmentHistory IMSAssignmentHistory[]
+
+  @@map("ims")
+  @@index([analystId])
+  @@index([status])
+  @@index([ccdId])
+}
+
+model Tag {
+  id        String   @id @default(uuid())
+  name      String   @unique
+  color     String?  // Hex color code
+  createdAt DateTime @default(now())
+
+  // Relations
+  ims       IMSTag[]
+
+  @@map("tags")
+}
+
+model IMSTag {
+  imsId     String
+  tagId     String
+  createdAt DateTime @default(now())
+
+  ims       IMS      @relation(fields: [imsId], references: [id], onDelete: Cascade)
+  tag       Tag      @relation(fields: [tagId], references: [id], onDelete: Cascade)
+
+  @@id([imsId, tagId])
+  @@map("ims_tags")
+}
+
+model MergedIMS {
+  id          String   @id @default(uuid())
+  mergeName   String
+  description String?  @db.Text
+  reason      String?  @db.Text
+  mergedAt    DateTime @default(now())
+  unmergedAt  DateTime? // If unmerged
+
+  createdById String
+  createdBy   User     @relation("MergeCreatedBy", fields: [createdById], references: [id])
+
+  // Relations
+  sourceIMS   MergedIMSItem[]
+
+  @@map("merged_ims")
+}
+
+model MergedIMSItem {
+  id          String   @id @default(uuid())
+  mergeId     String
+  imsId       String
+
+  merge       MergedIMS @relation(fields: [mergeId], references: [id], onDelete: Cascade)
+  ims         IMS       @relation("SourceIMS", fields: [imsId], references: [id])
+
+  @@unique([mergeId, imsId])
+  @@map("merged_ims_items")
+}
+
+model IMSRelation {
+  id            String   @id @default(uuid())
+  sourceIMSId   String
+  targetIMSId   String
+  relationType  String   // "related", "duplicate", "child", "parent"
+  createdAt     DateTime @default(now())
+
+  sourceIMS     IMS      @relation("SourceIMS", fields: [sourceIMSId], references: [id], onDelete: Cascade)
+  targetIMS     IMS      @relation("TargetIMS", fields: [targetIMSId], references: [id], onDelete: Cascade)
+
+  @@unique([sourceIMSId, targetIMSId])
+  @@map("ims_relations")
+}
+
+model Comment {
+  id        String   @id @default(uuid())
+  content   String   @db.Text
+  imsId     String
+  userId    String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  ims       IMS      @relation(fields: [imsId], references: [id], onDelete: Cascade)
+  user      User     @relation(fields: [userId], references: [id])
+
+  @@map("comments")
+  @@index([imsId])
+}
+
+model Attachment {
+  id        String   @id @default(uuid())
+  filename  String
+  filepath  String
+  mimetype  String
+  size      Int
+  imsId     String
+  uploadedAt DateTime @default(now())
+
+  ims       IMS      @relation(fields: [imsId], references: [id], onDelete: Cascade)
+
+  @@map("attachments")
+}
+
+model IMSHistory {
+  id        String   @id @default(uuid())
+  imsId     String
+  action    String   // "created", "updated", "status_changed", "assigned", etc.
+  changes   String   @db.Text // JSON string of changes
+  createdAt DateTime @default(now())
+
+  ims       IMS      @relation(fields: [imsId], references: [id], onDelete: Cascade)
+
+  @@map("ims_history")
+  @@index([imsId])
+}
+
+model IMSAssignmentHistory {
+  id          String   @id @default(uuid())
+  imsId       String
+  analystId   String?
+  assignedAt  DateTime @default(now())
+
+  ims         IMS      @relation(fields: [imsId], references: [id], onDelete: Cascade)
+  analyst     User?    @relation(fields: [analystId], references: [id])
+
+  @@map("ims_assignment_history")
+  @@index([imsId])
+}
