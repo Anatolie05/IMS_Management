@@ -5,6 +5,9 @@
   "author": "StatCom",
   "private": true,
   "license": "MIT",
+  "prisma": {
+    "seed": "bun prisma/seed.ts"
+  },
   "scripts": {
     "prebuild": "rimraf dist",
     "build": "nest build",

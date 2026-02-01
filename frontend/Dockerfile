@@ -1,5 +1,5 @@
 # Frontend Dockerfile
-FROM oven/bun:1-alpine AS base
+FROM oven/bun:1-debian AS base
 
 WORKDIR /app
 
@@ -36,4 +36,4 @@ EXPOSE 3000
 ENV PORT=3000
 ENV HOSTNAME="0.0.0.0"
 
-CMD ["bun", "server.js"]
+CMD ["node", "server.js"]

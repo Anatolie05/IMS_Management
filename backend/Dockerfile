@@ -1,7 +1,10 @@
 # Backend Dockerfile
-FROM oven/bun:1-alpine AS base
+FROM oven/bun:1-debian AS base
 
 WORKDIR /app
+
+# Install OpenSSL for Prisma
+RUN apt-get update && apt-get install -y openssl libssl-dev && rm -rf /var/lib/apt/lists/*
 
 # Install dependencies
 FROM base AS deps
@@ -26,13 +29,6 @@ COPY --from=builder /app/node_modules ./node_modules
 COPY --from=builder /app/prisma ./prisma
 COPY --from=builder /app/package.json ./
 
-# Create startup script
-RUN echo '#!/bin/sh' > /app/start.sh && \
-    echo 'bunx prisma migrate deploy' >> /app/start.sh && \
-    echo 'bunx prisma db seed || true' >> /app/start.sh && \
-    echo 'bun run start:prod' >> /app/start.sh && \
-    chmod +x /app/start.sh
+EXPOSE 3003
 
-EXPOSE 3001
-
-CMD ["/app/start.sh"]
+CMD ["sh", "-c", "bunx prisma migrate deploy && bunx prisma db seed || true && node dist/main.js"]
