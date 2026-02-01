@@ -31,7 +31,70 @@ This system provides a complete platform for managing IMS records with:
 - **State**: Zustand
 - **HTTP**: Axios
 
-## Quick Start
+## Quick Start with Docker
+
+Cea mai simplă metodă de instalare - doar 3 comenzi!
+
+### Cerințe
+
+- [Docker](https://docs.docker.com/get-docker/) instalat
+- [Docker Compose](https://docs.docker.com/compose/install/) instalat
+
+### Instalare în 3 pași
+
+**Pasul 1: Clonează repository-ul**
+```bash
+git clone https://github.com/Anatolie05/IMS_Management.git
+cd IMS_Management
+```
+
+**Pasul 2: Pornește aplicația**
+```bash
+docker-compose up -d
+```
+
+**Pasul 3: Accesează aplicația**
+
+| Serviciu | URL |
+|----------|-----|
+| Frontend | http://localhost:3000 |
+| Backend API | http://localhost:3001 |
+| API Docs (Swagger) | http://localhost:3001/api/docs |
+
+### Credențiale implicite
+
+| Rol | Email | Parolă |
+|-----|-------|--------|
+| Admin | admin@ims.com | password123 |
+| Analyst | analyst1@ims.com | password123 |
+| Analyst | analyst2@ims.com | password123 |
+| Viewer | viewer@ims.com | password123 |
+
+### Comenzi Docker utile
+
+```bash
+# Pornește toate serviciile
+docker-compose up -d
+
+# Oprește toate serviciile
+docker-compose down
+
+# Vezi log-urile în timp real
+docker-compose logs -f
+
+# Rebuild după modificări de cod
+docker-compose up -d --build
+
+# Șterge totul (inclusiv baza de date)
+docker-compose down -v
+
+# Vezi statusul containerelor
+docker-compose ps
+```
+
+---
+
+## Instalare Manuală (fără Docker)
 
 ### Prerequisites
 
@@ -43,7 +106,8 @@ This system provides a complete platform for managing IMS records with:
 
 1. **Clone the repository**
 ```bash
-cd IMS_Check
+git clone https://github.com/Anatolie05/IMS_Management.git
+cd IMS_Management
 ```
 
 2. **Setup Backend**
@@ -331,9 +395,31 @@ bun run build
 bun run start
 ```
 
-### Docker (Optional)
+### Docker Deployment
 
-Create Docker containers for both backend and frontend for easy deployment.
+Pentru deployment în producție cu Docker:
+
+```bash
+# Clone și navighează
+git clone https://github.com/Anatolie05/IMS_Management.git
+cd IMS_Management
+
+# Editează variabilele de mediu în docker-compose.yml
+# - Schimbă JWT_SECRET cu o cheie secretă puternică
+# - Schimbă parola bazei de date
+# - Actualizează CORS_ORIGIN cu domeniul tău
+
+# Pornește în background
+docker-compose up -d
+
+# Verifică că totul rulează
+docker-compose ps
+```
+
+Pentru producție, se recomandă:
+- Nginx ca reverse proxy
+- Certificate SSL (Let's Encrypt)
+- Backup automat pentru PostgreSQL
 
 ## License
 
