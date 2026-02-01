@@ -61,15 +61,6 @@ docker-compose up -d
 | Backend API | http://localhost:3001 |
 | API Docs (Swagger) | http://localhost:3001/api/docs |
 
-### Default Credentials
-
-| Role | Email | Password |
-|------|-------|----------|
-| Admin | admin@ims.com | password123 |
-| Analyst | analyst1@ims.com | password123 |
-| Analyst | analyst2@ims.com | password123 |
-| Viewer | viewer@ims.com | password123 |
-
 ### Useful Docker Commands
 
 ```bash
@@ -149,14 +140,6 @@ bun run dev
 ```
 
 Frontend will run on `http://localhost:3000`
-
-### Default Credentials
-
-After running the seed:
-- **Admin**: admin@ims.com / password123
-- **Analyst 1**: analyst1@ims.com / password123
-- **Analyst 2**: analyst2@ims.com / password123
-- **Viewer**: viewer@ims.com / password123
 
 ## Features
 
