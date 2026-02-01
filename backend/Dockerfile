@@ -33,4 +33,4 @@ COPY --from=builder /app/package.json ./
 
 EXPOSE 3003
 
-CMD ["sh", "-c", "bunx prisma db push --skip-generate && bunx prisma db seed || true && node dist/main.js"]
+CMD ["sh", "-c", "bunx prisma db push --skip-generate && bunx prisma db seed || true && node dist/src/main.js"]
