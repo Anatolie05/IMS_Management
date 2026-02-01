@@ -33,68 +33,68 @@ This system provides a complete platform for managing IMS records with:
 
 ## Quick Start with Docker
 
-Cea mai simplă metodă de instalare - doar 3 comenzi!
+The easiest way to get started - just 3 commands!
 
-### Cerințe
+### Requirements
 
-- [Docker](https://docs.docker.com/get-docker/) instalat
-- [Docker Compose](https://docs.docker.com/compose/install/) instalat
+- [Docker](https://docs.docker.com/get-docker/) installed
+- [Docker Compose](https://docs.docker.com/compose/install/) installed
 
-### Instalare în 3 pași
+### Installation in 3 Steps
 
-**Pasul 1: Clonează repository-ul**
+**Step 1: Clone the repository**
 ```bash
 git clone https://github.com/Anatolie05/IMS_Management.git
 cd IMS_Management
 ```
 
-**Pasul 2: Pornește aplicația**
+**Step 2: Start the application**
 ```bash
 docker-compose up -d
 ```
 
-**Pasul 3: Accesează aplicația**
+**Step 3: Access the application**
 
-| Serviciu | URL |
-|----------|-----|
+| Service | URL |
+|---------|-----|
 | Frontend | http://localhost:3000 |
 | Backend API | http://localhost:3001 |
 | API Docs (Swagger) | http://localhost:3001/api/docs |
 
-### Credențiale implicite
+### Default Credentials
 
-| Rol | Email | Parolă |
-|-----|-------|--------|
+| Role | Email | Password |
+|------|-------|----------|
 | Admin | admin@ims.com | password123 |
 | Analyst | analyst1@ims.com | password123 |
 | Analyst | analyst2@ims.com | password123 |
 | Viewer | viewer@ims.com | password123 |
 
-### Comenzi Docker utile
+### Useful Docker Commands
 
 ```bash
-# Pornește toate serviciile
+# Start all services
 docker-compose up -d
 
-# Oprește toate serviciile
+# Stop all services
 docker-compose down
 
-# Vezi log-urile în timp real
+# View logs in real-time
 docker-compose logs -f
 
-# Rebuild după modificări de cod
+# Rebuild after code changes
 docker-compose up -d --build
 
-# Șterge totul (inclusiv baza de date)
+# Remove everything (including database)
 docker-compose down -v
 
-# Vezi statusul containerelor
+# Check container status
 docker-compose ps
 ```
 
 ---
 
-## Instalare Manuală (fără Docker)
+## Manual Installation (without Docker)
 
 ### Prerequisites
 
@@ -320,7 +320,7 @@ bun run start
 ## Project Structure
 
 ```
-IMS_Check/
+IMS_Management/
 ├── backend/
 │   ├── prisma/
 │   │   ├── schema.prisma      # Database schema
@@ -334,6 +334,7 @@ IMS_Check/
 │   │   ├── dashboard/         # Analytics
 │   │   ├── prisma/            # Prisma service
 │   │   └── common/            # Shared utilities
+│   ├── Dockerfile
 │   └── README.md
 ├── frontend/
 │   ├── src/
@@ -342,7 +343,9 @@ IMS_Check/
 │   │   ├── contexts/          # State management
 │   │   ├── lib/               # Utilities
 │   │   └── types/             # TypeScript types
+│   ├── Dockerfile
 │   └── README.md
+├── docker-compose.yml
 └── README.md
 ```
 
@@ -364,7 +367,35 @@ NEXT_PUBLIC_API_URL=http://localhost:3001
 
 ## Deployment
 
-### Backend Deployment
+### Docker Deployment (Recommended)
+
+For production deployment with Docker:
+
+```bash
+# Clone and navigate
+git clone https://github.com/Anatolie05/IMS_Management.git
+cd IMS_Management
+
+# Edit environment variables in docker-compose.yml
+# - Change JWT_SECRET to a strong secret key
+# - Change database password
+# - Update CORS_ORIGIN with your domain
+
+# Start in background
+docker-compose up -d
+
+# Verify everything is running
+docker-compose ps
+```
+
+For production, it's recommended to use:
+- Nginx as reverse proxy
+- SSL certificates (Let's Encrypt)
+- Automated PostgreSQL backups
+
+### Manual Deployment
+
+#### Backend
 
 1. Build the application
 ```bash
@@ -382,7 +413,7 @@ bun run prisma:migrate deploy
 bun run start:prod
 ```
 
-### Frontend Deployment
+#### Frontend
 
 1. Build the application
 ```bash
@@ -394,32 +425,6 @@ bun run build
 ```bash
 bun run start
 ```
-
-### Docker Deployment
-
-Pentru deployment în producție cu Docker:
-
-```bash
-# Clone și navighează
-git clone https://github.com/Anatolie05/IMS_Management.git
-cd IMS_Management
-
-# Editează variabilele de mediu în docker-compose.yml
-# - Schimbă JWT_SECRET cu o cheie secretă puternică
-# - Schimbă parola bazei de date
-# - Actualizează CORS_ORIGIN cu domeniul tău
-
-# Pornește în background
-docker-compose up -d
-
-# Verifică că totul rulează
-docker-compose ps
-```
-
-Pentru producție, se recomandă:
-- Nginx ca reverse proxy
-- Certificate SSL (Let's Encrypt)
-- Backup automat pentru PostgreSQL
 
 ## License
 
