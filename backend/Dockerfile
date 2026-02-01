@@ -17,6 +17,8 @@ COPY --from=deps /app/node_modules ./node_modules
 COPY . .
 RUN bunx prisma generate
 RUN bun run build
+# Debug: show what was built
+RUN ls -la dist/
 
 # Production
 FROM base AS runner
@@ -31,4 +33,4 @@ COPY --from=builder /app/package.json ./
 
 EXPOSE 3003
 
-CMD ["sh", "-c", "bunx prisma db push --skip-generate && bunx prisma db seed || true && node dist/main"]
+CMD ["sh", "-c", "bunx prisma db push --skip-generate && bunx prisma db seed || true && node dist/main.js"]
