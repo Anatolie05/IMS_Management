@@ -17,6 +17,9 @@ COPY . .
 RUN mkdir -p public
 
 ENV NEXT_TELEMETRY_DISABLED=1
+# Set API URL at build time (required for NEXT_PUBLIC_ vars)
+ARG NEXT_PUBLIC_API_URL=http://localhost:3003
+ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
 
 RUN bun run build
 
