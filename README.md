@@ -419,7 +419,3 @@ For issues or questions:
 - Check the API documentation at `/api/docs`
 - Review backend README: `backend/README.md`
 - Review frontend README: `frontend/README.md`
-
-## Credits
-
-Developed for StatCom - Information Manipulation Sets Management System
